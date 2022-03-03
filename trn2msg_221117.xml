@@ -1,0 +1,17 @@
+<root>
+<msg-list>
+	<msg>Purchase  with card  966796******9696 on 11.11.2018 14:34, amount 45.99usd.</msg>
+	<msg>Withdrawal  with card  8237******258971 on 11.12.2018 09:56, amount 10.00eur.</msg>
+	<msg>Purchase  with card  966796******9696 on 11.11.2018 14:34, amount 45.99usd.</msg>
+	<msg>Withdrawal  with card  8237******258971 on 11.12.2018 09:56, amount 10.00eur.</msg>
+	<msg>Purchase  with card  966796******9696 on 11.11.2018 14:34, amount 45.99usd.</msg>
+	<msg>Withdrawal  with card  8237******258971 on 11.12.2018 09:56, amount 10.00eur.</msg>
+	<msg>Purchase  with card  966796******9696 on 11.11.2018 14:34, amount 45.99usd.</msg>
+	<msg>Withdrawal  with card  8237******258971 on 11.12.2018 09:56, amount 10.00eur.</msg>
+	<msg>Purchase  with card  966796******9696 on 11.11.2018 14:34, amount 45.99usd.</msg>
+	<msg>Withdrawal  with card  8237******258971 on 11.12.2018 09:56, amount 10.00eur.</msg>
+	<msg>Purchase  with card  966796******9696 on 11.11.2018 14:34, amount 45.99usd.</msg>
+	<msg>Withdrawal  with card  8237******258971 on 11.12.2018 09:56, amount 10.00eur.</msg>
+<msg-list>
+<totals cnt="12" sum="335.94" date = "2018.11.17 12:34:45/"
+</root>

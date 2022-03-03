@@ -159,6 +159,11 @@ string xmlFileTime()
 {
     return "2018.11.17 12:34:45";
 }
+// F-tion to create time stamp for log vile in format YYMMDD
+string logFileNameTime()
+{
+    return "221117";
+}
 int main()
 {
     // "00966796969690609300000000459920181111143445840"9667******969696
@@ -170,16 +175,23 @@ int main()
 
     ifstream fin; //read from file
     ofstream fin2; //create and write log file
-    // create log file name
-    string logFileName = "test2.txt";
+    ofstream xmlFile; //create and write xml file
+    // create log file name, <program_name>_YYMMDD.log
+    string logFileName = "trn2msg_" + (logFileNameTime()) + ".log";
+    // create xml file name, <program_name>_YYMMDD.xml
+    string xmlFileName = "trn2msg_" + (logFileNameTime()) + ".xml";
 
     fin.open("transactions2.txt"); //open txt
-    fin2.open(logFileName);
+    fin2.open(logFileName); //create log
+    xmlFile.open(xmlFileName); // create xml
+
     string newLine;
-    if(fin.is_open() && fin2.is_open()) // check is both files are open
+    if(fin.is_open() && fin2.is_open()&& xmlFile.is_open()) // check is both files are open
     {
         //create start message for the log file "17:30:05.001 Start of file conversion"
         fin2 << logTime() <<" Start of file conversion\n\n"; // log file start
+        //create start message for the log file "17:30:05.001 Start of file conversion"
+        xmlFile << "<root>\n\<msg-list>\n"; // xml file start
 
         //17:30:05.001 ERROR: Invalid arguments given
         //
@@ -191,34 +203,33 @@ int main()
             if (outputMessage[0] != 'E')
             {
                 cout <<  outputMessage << endl;
+                xmlFile << "\t<msg>" <<outputMessage<< "</msg>\n" ;
             }
             if (outputMessage[0] == 'E')
             {
                 fin2 << logTime() <<" " <<  outputMessage << "\n"<< endl;
             }
         }
+        xmlFile << "<msg-list>\n"; // xml message part end
+
+        // xml total and date part
+
+        xmlFile << "<totals cnt=\""<< cnt <<"\" sum=\""<< totalSum <<"\" ";
+        xmlFile << "date = \""<< xmlFileTime() <<"/\"\n";
+
+        //create end message for the log file  "17:30:06.020 End of conversion"
+        fin2 << logTime() <<" End of conversion"; // log file end
+
+        xmlFile << "</root>"; // xml file end
+
+        fin.close(); // close file
+        fin2.close();// close file2
+        xmlFile.close();// close xmlFile
     }
-    //create end message for the log file  "17:30:06.020 End of conversion"
-    fin2 << logTime() <<" End of conversion"; // log file end
-
-    fin.close(); // close file
-    fin2.close();// close file2
-
 // Print totals
-//totals cnt="2" sum="5599" date="2018.11.17 12:34:45"/
-    cout<<"Total transactions = "<<cnt<<" total amount: "<< totalSum << endl;
-// declaring argument of time()
-    time_t my_time = time(NULL);
+    //totals cnt="2" sum="5599" date="2018.11.17 12:34:45"/
+    //cout<<"Total transactions = "<<cnt<<" total amount: "<< totalSum << endl;
 
-
-    printf ("totals cnt=\"%u\" sum=\"%8.2f\" date = \"%s\"", cnt, totalSum, ctime(&my_time));
-
-// Time
-//cout<<;//ctime();
-
-
-    // ctime() used to give the present time
-    // printf("%s", ctime(&my_time));
 
     return 0;
 }
