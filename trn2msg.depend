@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1646323212 source:c:\users\milti\documents\c_learning\trn2msg\main.cpp
+1646333395 source:c:\users\milti\documents\c_learning\trn2msg\main.cpp
 	<iostream>
 	<fstream>
 	<time.h>

@@ -143,9 +143,22 @@ string outputMessageConsrtuct(string id)
         totalSum += stof(returnAmount(id));
         //cout <<" sum "<<totalSum<<endl;
     }
+    else
+    {
+        return "ERROR: Invalid arguments given";
+    }
     return outputMessage;
 }
-
+// Create log time for Log file entries should begin with timestamp in the form HH: MM: ss.sss. f.ex. 17:30:05.001
+string logTime()
+{
+    return "17:30:05.001";
+}
+// create time stamp for xml file
+string xmlFileTime()
+{
+    return "2018.11.17 12:34:45";
+}
 int main()
 {
     // "00966796969690609300000000459920181111143445840"9667******969696
@@ -157,6 +170,7 @@ int main()
 
     ifstream fin; //read from file
     ofstream fin2; //create and write log file
+    // create log file name
     string logFileName = "test2.txt";
 
     fin.open("transactions2.txt"); //open txt
@@ -165,20 +179,27 @@ int main()
     if(fin.is_open() && fin2.is_open()) // check is both files are open
     {
         //create start message for the log file "17:30:05.001 Start of file conversion"
-        fin2 << logFileName <<"Start of file conversion\n\n"; // log file start
+        fin2 << logTime() <<" Start of file conversion\n\n"; // log file start
 
         //17:30:05.001 ERROR: Invalid arguments given
         //
 
         while (getline(fin,newLine))
         {
-            fin2 << newLine <<"\n";
-            cout << outputMessageConsrtuct(newLine) << endl;
+            string outputMessage =  outputMessageConsrtuct(newLine);
 
+            if (outputMessage[0] != 'E')
+            {
+                cout <<  outputMessage << endl;
+            }
+            if (outputMessage[0] == 'E')
+            {
+                fin2 << logTime() <<" " <<  outputMessage << "\n"<< endl;
+            }
         }
     }
     //create end message for the log file  "17:30:06.020 End of conversion"
-    fin2 << logFileName <<"End of conversion"; // log file end
+    fin2 << logTime() <<" End of conversion"; // log file end
 
     fin.close(); // close file
     fin2.close();// close file2
@@ -190,15 +211,14 @@ int main()
     time_t my_time = time(NULL);
 
 
-    newLine = printf ("\ntotals cnt=\"%u\" sum=\"%8.2f\" date=\"%s\"/", cnt, totalSum, ctime(&my_time));
+    printf ("totals cnt=\"%u\" sum=\"%8.2f\" date = \"%s\"", cnt, totalSum, ctime(&my_time));
 
-    cout<<"\nnewLine"<<newLine<<endl;
 // Time
 //cout<<;//ctime();
 
 
     // ctime() used to give the present time
-    printf("%s", ctime(&my_time));
+    // printf("%s", ctime(&my_time));
 
     return 0;
 }
