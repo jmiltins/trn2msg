@@ -1,8 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include <ctime> // for time
+//#include <ctime> // for time
 #include <iomanip> // for time
 #include <sstream> // for time
+#include <chrono>
 
 
 /*Transactions are presented in fixed length format file separated by newline character:
@@ -33,6 +34,7 @@ amount 10.00 eur.&lt;/msg&gt;
 using namespace std;
 uint16_t cnt = 0; // Max 65536
 float totalSum = 0; // max 3.40282e+038
+double timer; // for milliseconds
 
 
 // Transastion type check f-tion
@@ -154,7 +156,18 @@ string outputMessageConsrtuct(string id)
     return outputMessage;
 }
 // Split time string
-
+string returnMillisecFormat()
+{
+    float dividedResult = (clock() - timer) / 1000;
+    string str = to_string(dividedResult);
+    // remove digit after to_string() ftion, because it returns with .000000, need just .00 .
+    for (int i = 0; i < 3; i++)
+    {
+        str.pop_back(); // remove digit after .
+    }
+    str.erase(0, 1);
+    return str;
+}
 // Create log time for Log file entries should begin with timestamp in the form HH: MM: ss.sss. f.ex. 17:30:05.001
 string logTime()
 {
@@ -163,7 +176,7 @@ string logTime()
     auto tm = *std::localtime(&t);
 
     std::ostringstream oss;
-    oss << std::put_time(&tm, "%H:%M:%S.")<<"000";
+    oss << std::put_time(&tm, "%H:%M:%S")<< returnMillisecFormat();
     auto str = oss.str();
     return str;
 }
@@ -191,6 +204,8 @@ string logFileNameTime()
     auto str = oss.str();
     return str;
 }
+
+
 int main()
 {
 
@@ -221,7 +236,7 @@ int main()
         //create start message for the log file "17:30:05.001 Start of file conversion"
         xmlFile << "<root>\n\<msg-list>\n"; // xml file start
 
-        //17:30:05.001 ERROR: Invalid arguments given
+        timer = clock();
         //
 
         while (getline(fin,newLine))
@@ -230,7 +245,7 @@ int main()
 
             if (outputMessage[0] != 'E')
             {
-                cout <<  outputMessage << endl;
+                cout <<  outputMessage << (returnMillisecFormat()) <<endl;
                 xmlFile << "\t<msg>" <<outputMessage<< "</msg>\n" ;
             }
             if (outputMessage[0] == 'E')
@@ -253,6 +268,10 @@ int main()
         fin.close(); // close file
         fin2.close();// close file2
         xmlFile.close();// close xmlFile
+    }
+    else
+    {
+        cout<<"ERROR: file loading error!!!" << endl; // if files are not open cout Error message
     }
 // Print totals
     //totals cnt="2" sum="5599" date="2018.11.17 12:34:45"/
