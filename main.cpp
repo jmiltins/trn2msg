@@ -1,6 +1,10 @@
 #include <iostream>
 #include <fstream>
-#include <time.h>
+#include <ctime> // for time
+#include <iomanip> // for time
+#include <sstream> // for time
+
+
 /*Transactions are presented in fixed length format file separated by newline character:
 Data field Siz
 e
@@ -149,23 +153,47 @@ string outputMessageConsrtuct(string id)
     }
     return outputMessage;
 }
+// Split time string
+
 // Create log time for Log file entries should begin with timestamp in the form HH: MM: ss.sss. f.ex. 17:30:05.001
 string logTime()
 {
-    return "17:30:05.001";
+    // Returns string in format 17:30:05.001
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%H:%M:%S.")<<"000";
+    auto str = oss.str();
+    return str;
 }
 // create time stamp for xml file
 string xmlFileTime()
 {
-    return "2018.11.17 12:34:45";
+    // Returns string in format YYYY.MM.DD HH24:MI:SS
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y.%m.%d %H:%M:%S"); // or "%Y.%m.%d %H:%M:%S"
+    auto str = oss.str();
+    return str;
 }
-// F-tion to create time stamp for log vile in format YYMMDD
+// F-tion to create time stamp for log file in format YYMMDD
 string logFileNameTime()
 {
-    return "221117";
+    // Returns string in format YYMMDD
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%y%m%d");
+    auto str = oss.str();
+    return str;
 }
 int main()
 {
+
     // "00966796969690609300000000459920181111143445840"9667******969696
     // "01234567890123456789012345678901234567890123456"
     // "           1        2          3        4
@@ -210,12 +238,12 @@ int main()
                 fin2 << logTime() <<" " <<  outputMessage << "\n"<< endl;
             }
         }
-        xmlFile << "<msg-list>\n"; // xml message part end
+        xmlFile << "</msg-list>\n"; // xml message part end
 
         // xml total and date part
 
-        xmlFile << "<totals cnt=\""<< cnt <<"\" sum=\""<< totalSum <<"\" ";
-        xmlFile << "date = \""<< xmlFileTime() <<"/\"\n";
+        xmlFile << "<totals> cnt=\""<< cnt <<"\" sum=\""<< totalSum <<"\" ";
+        xmlFile << "date = \""<< xmlFileTime() <<"/\"</totals>\n";
 
         //create end message for the log file  "17:30:06.020 End of conversion"
         fin2 << logTime() <<" End of conversion"; // log file end
