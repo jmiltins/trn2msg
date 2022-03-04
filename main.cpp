@@ -131,9 +131,13 @@ bool checkForErrors(string id)
     {
         validation = false;
     }
+    else if (checkTransactionType(id) == "None")
+    {
+        validation = false;
+    }
     return validation;
 }
-// Result Output format f-tion + total amount and transaction count add
+// Result Output format f-tion (if valid data) + total amount and transaction count add, ERROR (if invalid data
 string outputMessageConsrtuct(string id)
 {
     string outputMessage = "";
@@ -155,7 +159,7 @@ string outputMessageConsrtuct(string id)
     }
     return outputMessage;
 }
-// Split time string
+// Calcilate millis since start + format .000
 string returnMillisecFormat()
 {
     float dividedResult = (clock() - timer) / 1000;
@@ -165,9 +169,10 @@ string returnMillisecFormat()
     {
         str.pop_back(); // remove digit after .
     }
-    str.erase(0, 1);
+    str.erase(0, 1); // remove digit front .
     return str;
 }
+// Split time string
 // Create log time for Log file entries should begin with timestamp in the form HH: MM: ss.sss. f.ex. 17:30:05.001
 string logTime()
 {
@@ -180,7 +185,7 @@ string logTime()
     auto str = oss.str();
     return str;
 }
-// create time stamp for xml file
+// create time stamp for xml file entries
 string xmlFileTime()
 {
     // Returns string in format YYYY.MM.DD HH24:MI:SS
@@ -188,11 +193,11 @@ string xmlFileTime()
     auto tm = *std::localtime(&t);
 
     std::ostringstream oss;
-    oss << std::put_time(&tm, "%Y.%m.%d %H:%M:%S"); // or "%Y.%m.%d %H:%M:%S"
+    oss << std::put_time(&tm, "%Y.%m.%d %H:%M:%S"); // or "%Y-%m-%d %H:%M:%S"
     auto str = oss.str();
     return str;
 }
-// F-tion to create time stamp for log file in format YYMMDD
+// F-tion to create time stamp for log file name in format YYMMDD
 string logFileNameTime()
 {
     // Returns string in format YYMMDD
@@ -208,15 +213,8 @@ string logFileNameTime()
 
 int main()
 {
-
-    // "00966796969690609300000000459920181111143445840"9667******969696
-    // "01234567890123456789012345678901234567890123456"
-    // "           1        2          3        4
-// Print "Output:"
-    cout <<"Output: "<< endl;
-// read from text file transactions and create log file
-
-    ifstream fin; //read from file
+// read from text file transactions and create log file and xml file
+    ifstream fin; //read from .txt file
     ofstream fin2; //create and write log file
     ofstream xmlFile; //create and write xml file
     // create log file name, <program_name>_YYMMDD.log
@@ -228,27 +226,30 @@ int main()
     fin2.open(logFileName); //create log
     xmlFile.open(xmlFileName); // create xml
 
-    string newLine;
-    if(fin.is_open() && fin2.is_open()&& xmlFile.is_open()) // check is both files are open
+    string newLine; // for storing line string
+
+    if(fin.is_open() && fin2.is_open()&& xmlFile.is_open()) // check is all files are open
     {
+        timer = clock(); // save millis start time
+
         //create start message for the log file "17:30:05.001 Start of file conversion"
         fin2 << logTime() <<" Start of file conversion\n\n"; // log file start
-        //create start message for the log file "17:30:05.001 Start of file conversion"
+        //create start message for the xml file "<root>\n\<msg-list>\n"
         xmlFile << "<root>\n\<msg-list>\n"; // xml file start
 
-        timer = clock();
-        //
+
+        // Loop for reading lines
 
         while (getline(fin,newLine))
         {
             string outputMessage =  outputMessageConsrtuct(newLine);
 
-            if (outputMessage[0] != 'E')
+            if (outputMessage[0] != 'E') // if first char of output message is NOT E, redirect to xml file
             {
-                cout <<  outputMessage << (returnMillisecFormat()) <<endl;
+                //cout <<  outputMessage <<endl;
                 xmlFile << "\t<msg>" <<outputMessage<< "</msg>\n" ;
             }
-            if (outputMessage[0] == 'E')
+            else if (outputMessage[0] == 'E') // else if first char of output message is E, redirect to log file
             {
                 fin2 << logTime() <<" " <<  outputMessage << "\n"<< endl;
             }
@@ -268,15 +269,15 @@ int main()
         fin.close(); // close file
         fin2.close();// close file2
         xmlFile.close();// close xmlFile
+
+        // Print success message
+        cout << "Files " << logFileName <<" and " << xmlFileName <<" created! " << endl;
     }
     else
     {
+        // Print ERROR message
         cout<<"ERROR: file loading error!!!" << endl; // if files are not open cout Error message
     }
-// Print totals
-    //totals cnt="2" sum="5599" date="2018.11.17 12:34:45"/
-    //cout<<"Total transactions = "<<cnt<<" total amount: "<< totalSum << endl;
-
 
     return 0;
 }
